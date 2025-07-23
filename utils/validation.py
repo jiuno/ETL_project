@@ -30,10 +30,22 @@ def validar_df_polars(df: pl.DataFrame, columnas_fecha: list[str] = [], mostrar_
 
     for col in columnas_fecha:
         try:
-            df = df.with_columns([
-                pl.col(col).str.strptime(pl.Date, "%Y-%m-%d", strict=False)
-            ])
-            print(f"📅 Columna '{col}' convertida a fecha. Rango:")
-            print(f"{df[col].min()} → {df[col].max()}\n")
+            tipo_actual = df.schema[col]
+
+            if tipo_actual == pl.Utf8:
+                df = df.with_columns([
+                    pl.col(col).str.strptime(pl.Date, "%Y-%m-%d", strict=False)
+                ])
+                print(f"📅 Columna '{col}' convertida a fecha.")
+            elif tipo_actual in [pl.Date, pl.Datetime]:
+                print(f"📅 Columna '{col}' ya es de tipo fecha ({tipo_actual}).")
+            else:
+                print(f"⚠️ Columna '{col}' no es texto ni fecha (es {tipo_actual}), se omite.")
+                continue
+
+            # Mostrar rango si es fecha válida
+            print(f"   Rango: {df[col].min()} → {df[col].max()}\n")
+
         except Exception as e:
             print(f"⚠️ No se pudo convertir '{col}' a fecha: {e}\n")
+
