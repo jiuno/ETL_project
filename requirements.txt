@@ -1,0 +1,12 @@
+# Procesamiento de datos
+pandas==2.2.2
+openpyxl==3.1.2
+
+# Orquestación de flujos ETL
+prefect==2.19.9
+
+# Conexión a bases de datos
+sqlalchemy==2.0.31
+
+#Drivers para bases de datos externas
+psycopg2-binary==2.9.9    # PostgreSQL
