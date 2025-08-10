@@ -1,23 +1,32 @@
 import os
+from time import sleep
 import pandas as pd
 from prefect import flow, task
 
 @task
-def extract_from_csv(filename):
-    """Lee un csv y devuelve un DataFrame."""
-    filepath = os.path.join("erp_flow/files/", filename)
-    df = pd.read_csv(filepath)
+def extract_from_csv(path):
+    df = pd.read_csv(path)
+    print(f"Extracted df with shape {df.shape}")
     return df
 
 @task
-def print_df(df):
-    return df.head().to_string()
+def reading_df(df):
+    print(f"Received df of type {type(df)}")
+    return df
+
+@task
+def write_csv(df):
+    print(f"Writing df with shape {df.shape}")
+    df.to_csv('output.csv', index=False)
+    sleep(1) #Por alguna razon si es muy rapido la task se rompe al intentar actualizar la bd de prefect por concurrencia.
+    
 
 @flow
-def my_first_flow():
-    df = extract_from_csv('CUST_AZ12.csv')
-    str = print_df(df)
-    #print(str)
-
+def my_first_flow(path):
+    df = extract_from_csv(path)
+    df = reading_df(df)
+    write_csv(df)
+    print('finish')
+    
 if __name__ == "__main__":
-    my_first_flow()
+    my_first_flow(path='erp_flow/files/CUST_AZ12.csv')
