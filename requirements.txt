@@ -3,7 +3,7 @@ pandas==2.2.2
 openpyxl==3.1.2
 
 # Orquestación de flujos ETL
-prefect==2.19.9
+prefect==3.4.12
 
 # Conexión a bases de datos
 sqlalchemy==2.0.31
