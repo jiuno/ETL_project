@@ -18,7 +18,7 @@ def reading_df(df):
 def write_csv(df):
     print(f"Writing df with shape {df.shape}")
     df.to_csv('output.csv', index=False)
-    sleep(1) #Por alguna razon si es muy rapido la task se rompe al intentar actualizar la bd de prefect por concurrencia.
+    sleep(1) #Por alguna razon si es muy rapida la task se rompe al intentar actualizar la bd de prefect por concurrencia.
     
 
 @flow
