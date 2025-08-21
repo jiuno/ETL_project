@@ -1,0 +1,6 @@
+-- SQLite
+SELECT * FROM `LOC_A101.csv`;
+
+SELECT * FROM `PX_CAT_G1V2.csv`;
+
+
