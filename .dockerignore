@@ -1,0 +1,8 @@
+venv/
+__pycache__/
+*.pyc
+*.csv
+local_db/
+.git
+.gitignore
+output.csv

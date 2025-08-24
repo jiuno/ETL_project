@@ -1,11 +1,23 @@
-# Imagen base
-FROM python:3.11
+FROM ubuntu:22.04
 
-# Crear carpeta de trabajo
+# Instalar dependencias
+RUN apt-get update && apt-get install -y \
+    python3 python3-pip openssh-server sudo postgresql-client && \
+    mkdir -p /var/run/sshd && \
+    apt-get clean
+
+# Crear usuario SSH
+RUN useradd -m -s /bin/bash etluser && echo "etluser:etlpassword" | chpasswd && adduser etluser sudo
+
+# Configuración del directorio de trabajo
 WORKDIR /app
 
-# Copiar scripts
-COPY . /app
+# Copiar e instalar dependencias
+COPY requirements.txt /app/
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Instalar librerías necesarias
-RUN pip install --no-cache-dir pandas sqlalchemy psycopg2-binary openpyxl
+# Exponer puerto SSH
+EXPOSE 22
+
+# Comando de inicio
+CMD ["/usr/sbin/sshd", "-D"]

@@ -1,27 +1,37 @@
-version: '3.9'
+version: '3.8'
 
 services:
-  postgres:
+  vm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: etl_vm
+    ports:
+      - "2222:22"  # SSH
+    volumes:
+      - .:/app  # Montar todo el proyecto
+    networks:
+      - etl_net
+
+  db:
     image: postgres:15
-    container_name: postgres_etl
-    environment:
-      POSTGRES_USER: etl_user
-      POSTGRES_PASSWORD: etl_pass
-      POSTGRES_DB: bronze_etl
+    container_name: postgres_db
+    env_file:
+      - .env
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - etl_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  etl:
-    build: .  # construye la imagen usando Dockerfile
-    container_name: etl_runner
-    volumes:
-      - .:/app  # sincroniza tu carpeta local con el contenedor
-    working_dir: /app
-    command: tail -f /dev/null  # mantiene el contenedor corriendo
-    depends_on:
-      - postgres
+networks:
+  etl_net:
 
 volumes:
-  pgdata:
+  postgres_data:
